@@ -12,19 +12,29 @@ export class GamesRepository implements IGamesRepository {
     this.repository = getRepository(Game);
   }
 
-  async findByTitleContaining(param: string): Promise<Game[]> {
+  async findByTitleContaining(param: string): Promise<Game[] | undefined> {
+
+    // Não sei se está certo
+    // LINK: https://www.tutorialspoint.com/typeorm/typeorm_query_builder.htm
     return this.repository
-      .createQueryBuilder()
-      // Complete usando query builder
+      .createQueryBuilder("games")
+      .where("games.title = :title", { title: param }).getMany();
   }
 
   async countAllGames(): Promise<[{ count: string }]> {
-    return this.repository.query(); // Complete usando raw query
+
+    //Não sei se está compilerOptions
+    //LINK: https://www.webdevdrops.com/nodejs-banco-de-dados-orm-query-builder-driver-nativo/
+
+    return this.repository.query('SELECT COUNT(*) FROM games');
   }
 
   async findUsersByGameId(id: string): Promise<User[]> {
     return this.repository
       .createQueryBuilder()
-      // Complete usando query builder
+      .select("users")
+      .from(User, "users")
+      .where("games.id = :id", { id: id }).getMany();
+    // Complete usando query builder
   }
 }
